@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}EDA - Signal Metrics Analysis{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="page-header mb-4">
+            <h1 class="h2 fw-bold text-primary">
+                <i class="fas fa-chart-bar me-3"></i>Exploratory Data Analysis
+            </h1>
+            <p class="text-muted">Comprehensive analysis and visualization of signal metrics data</p>
+        </div>
+
+        {% if eda_results %}
+        
+        {% if 'overview' in eda_results %}
+        <!-- Dataset Overview -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Dataset Overview
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <img src="data:image/png;base64,{{ eda_results.overview }}" 
+                         class="img-fluid" alt="Dataset Overview" style="max-height: 500px;">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if 'signal_strength' in eda_results %}
+        <!-- Signal Strength Analysis -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-signal me-2"></i>Signal Strength Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <img src="data:image/png;base64,{{ eda_results.signal_strength }}" 
+                         class="img-fluid" alt="Signal Strength Analysis" style="max-height: 500px;">
+                </div>
+                <div class="mt-3">
+                    <p class="text-muted">
+                        Signal strength distribution shows the range and patterns of signal quality across different network types.
+                        The box plot reveals how signal strength varies by network type, helping identify optimal configurations.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if 'correlation' in eda_results %}
+        <!-- Correlation Matrix -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-project-diagram me-2"></i>Feature Correlation Matrix
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <img src="data:image/png;base64,{{ eda_results.correlation }}" 
+                         class="img-fluid" alt="Correlation Matrix" style="max-height: 600px;">
+                </div>
+                <div class="mt-3">
+                    <p class="text-muted">
+                        The correlation matrix shows relationships between different features. Strong correlations (dark colors) 
+                        indicate features that move together, while weak correlations (light colors) suggest independence.
+                    </p>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="correlation-legend" style="background-color: #d73027; width: 20px; height: 20px; margin-right: 10px;"></div>
+                                <span>Strong Positive Correlation (0.7 to 1.0)</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="correlation-legend" style="background-color: #f7f7f7; width: 20px; height: 20px; margin-right: 10px;"></div>
+                                <span>No Correlation (-0.3 to 0.3)</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="correlation-legend" style="background-color: #313695; width: 20px; height: 20px; margin-right: 10px;"></div>
+                                <span>Strong Negative Correlation (-1.0 to -0.7)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if 'distributions' in eda_results %}
+        <!-- Feature Distributions -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-histogram me-2"></i>Feature Distributions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <img src="data:image/png;base64,{{ eda_results.distributions }}" 
+                         class="img-fluid" alt="Feature Distributions" style="max-height: 600px;">
+                </div>
+                <div class="mt-3">
+                    <p class="text-muted">
+                        Feature distributions show the statistical patterns of key metrics. Understanding these distributions
+                        helps in model selection and data preprocessing decisions.
+                    </p>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Key Insights:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Data Throughput shows varying performance across measurements</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Latency distribution indicates network response patterns</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Signal Quality percentages reveal measurement reliability</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Statistical Summary:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-info text-info me-2"></i>Normal distributions indicate stable measurements</li>
+                                <li><i class="fas fa-info text-info me-2"></i>Skewed distributions may require transformation</li>
+                                <li><i class="fas fa-info text-info me-2"></i>Outliers can indicate measurement anomalies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Data Quality Summary -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clipboard-check me-2"></i>Data Quality Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card text-center p-3 border rounded">
+                            <i class="fas fa-database fa-2x text-primary mb-2"></i>
+                            <h6>Data Completeness</h6>
+                            <p class="text-muted mb-0">Comprehensive signal metrics with minimal missing values</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center p-3 border rounded">
+                            <i class="fas fa-balance-scale fa-2x text-success mb-2"></i>
+                            <h6>Data Balance</h6>
+                            <p class="text-muted mb-0">Network types distributed across measurement samples</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center p-3 border rounded">
+                            <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                            <h6>Feature Variety</h6>
+                            <p class="text-muted mb-0">Multiple measurement sources and signal characteristics</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center p-3 border rounded">
+                            <i class="fas fa-shield-alt fa-2x text-warning mb-2"></i>
+                            <h6>Data Reliability</h6>
+                            <p class="text-muted mb-0">Consistent measurement patterns across locations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if 'error' in eda_results %}
+        <!-- Error Display -->
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-exclamation-triangle me-2"></i>Analysis Error
+            </h4>
+            <p>Error generating EDA plots: {{ eda_results.error }}</p>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- No Data -->
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-info-circle me-2"></i>No Analysis Available
+            </h4>
+            <p>No EDA results to display. Please ensure data is loaded and try again.</p>
+            <hr>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left me-2"></i>Go Back to Home
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Home
+                    </a>
+                    <div>
+                        <a href="{{ url_for('classification') }}" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-tags me-2"></i>Classification Results
+                        </a>
+                        <a href="{{ url_for('regression') }}" class="btn btn-outline-success">
+                            <i class="fas fa-chart-line me-2"></i>Regression Results
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

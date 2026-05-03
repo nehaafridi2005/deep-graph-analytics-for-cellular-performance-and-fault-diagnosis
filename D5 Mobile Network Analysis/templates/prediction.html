@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction - Signal Metrics Analysis{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="page-header mb-4">
+            <h1 class="h2 fw-bold text-primary">
+                <i class="fas fa-crystal-ball me-3"></i>Signal Metrics Prediction
+            </h1>
+            <p class="text-muted">Predict network type and signal strength using trained models</p>
+        </div>
+
+        {% if models %}
+        <div class="row">
+            <!-- Input Form -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-input-pipe me-2"></i>Input Signal Metrics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('predict') }}">
+                            <!-- Model Selection -->
+                            <div class="mb-3">
+                                <label for="model" class="form-label">
+                                    <i class="fas fa-robot me-1"></i>Select Model
+                                </label>
+                                <select class="form-select" id="model" name="model" required>
+                                    <option value="">Choose a trained model...</option>
+                                    {% for model in models %}
+                                    <option value="{{ model }}" {% if selected_model == model %}selected{% endif %}>
+                                        {{ model }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <!-- Locality -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="Locality" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Locality
+                                    </label>
+                                    <input type="text" class="form-control" id="Locality" name="Locality" 
+                                           value="{{ sample_data.get('Locality', '') }}" placeholder="e.g., Anisabad">
+                                </div>
+
+                                <!-- Latitude -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="Latitude" class="form-label">
+                                        <i class="fas fa-globe me-1"></i>Latitude
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="Latitude" name="Latitude" 
+                                           value="{{ sample_data.get('Latitude', '') }}" placeholder="25.59910862">
+                                </div>
+
+                                <!-- Longitude -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="Longitude" class="form-label">
+                                        <i class="fas fa-globe me-1"></i>Longitude
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="Longitude" name="Longitude" 
+                                           value="{{ sample_data.get('Longitude', '') }}" placeholder="85.1373547">
+                                </div>
+
+                                <!-- Signal Quality -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="Signal Quality (%)" class="form-label">
+                                        <i class="fas fa-signal me-1"></i>Signal Quality (%)
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="Signal Quality (%)" 
+                                           name="Signal Quality (%)" value="{{ sample_data.get('Signal Quality (%)', '') }}" 
+                                           placeholder="0">
+                                </div>
+
+                                <!-- Data Throughput -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="Data Throughput (Mbps)" class="form-label">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Data Throughput (Mbps)
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="Data Throughput (Mbps)" 
+                                           name="Data Throughput (Mbps)" value="{{ sample_data.get('Data Throughput (Mbps)', '') }}" 
+                                           placeholder="1.863890037">
+                                </div>
+
+                                <!-- Latency -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="Latency (ms)" class="form-label">
+                                        <i class="fas fa-clock me-1"></i>Latency (ms)
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="Latency (ms)" 
+                                           name="Latency (ms)" value="{{ sample_data.get('Latency (ms)', '') }}" 
+                                           placeholder="129.122914">
+                                </div>
+
+                                <!-- BB60C Measurement -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="BB60C Measurement (dBm)" class="form-label">
+                                        <i class="fas fa-radio me-1"></i>BB60C Measurement (dBm)
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="BB60C Measurement (dBm)" 
+                                           name="BB60C Measurement (dBm)" value="{{ sample_data.get('BB60C Measurement (dBm)', '') }}" 
+                                           placeholder="0">
+                                </div>
+
+                                <!-- srsRAN Measurement -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="srsRAN Measurement (dBm)" class="form-label">
+                                        <i class="fas fa-broadcast-tower me-1"></i>srsRAN Measurement (dBm)
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="srsRAN Measurement (dBm)" 
+                                           name="srsRAN Measurement (dBm)" value="{{ sample_data.get('srsRAN Measurement (dBm)', '') }}" 
+                                           placeholder="0">
+                                </div>
+
+                                <!-- BladeRFxA9 Measurement -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="BladeRFxA9 Measurement (dBm)" class="form-label">
+                                        <i class="fas fa-satellite me-1"></i>BladeRFxA9 Measurement (dBm)
+                                    </label>
+                                    <input type="number" step="any" class="form-control" id="BladeRFxA9 Measurement (dBm)" 
+                                           name="BladeRFxA9 Measurement (dBm)" value="{{ sample_data.get('BladeRFxA9 Measurement (dBm)', '') }}" 
+                                           placeholder="0">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-magic me-2"></i>Predict
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                                    <i class="fas fa-eraser me-2"></i>Clear
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Samples & Predictions -->
+            <div class="col-lg-4">
+                <!-- Test Samples -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-vial me-2"></i>Load Test Sample
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Load pre-defined test samples:</p>
+                        <div class="d-grid gap-2">
+                            {% for i in range(5) %}
+                            <button type="button" class="btn btn-outline-info btn-sm" onclick="loadTestSample({{ i }})">
+                                Sample {{ i + 1 }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Results -->
+                {% if predictions %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Prediction Results
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="result-item mb-3">
+                            <label class="form-label text-muted">Network Type:</label>
+                            <div class="result-value">
+                                <span class="badge bg-primary fs-6">{{ predictions.network_type }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="result-item mb-3">
+                            <label class="form-label text-muted">Signal Strength:</label>
+                            <div class="result-value">
+                                <span class="badge bg-success fs-6">{{ "%.4f"|format(predictions.signal_strength) }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="result-item">
+                            <label class="form-label text-muted">Model Used:</label>
+                            <div class="result-value">
+                                <span class="badge bg-info fs-6">{{ predictions.model_used }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% else %}
+        <!-- No Models -->
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-exclamation-triangle me-2"></i>No Trained Models
+            </h4>
+            <p>No trained models available for prediction. Please train models first.</p>
+            <hr>
+            <a href="{{ url_for('home') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left me-2"></i>Go Back and Train Models
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Usage Instructions -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-list-ol text-primary me-2"></i>Steps to Predict</h6>
+                        <ol class="list-group list-group-numbered">
+                            <li class="list-group-item border-0 ps-0">Select a trained model from the dropdown</li>
+                            <li class="list-group-item border-0 ps-0">Fill in the signal metrics or load a test sample</li>
+                            <li class="list-group-item border-0 ps-0">Click "Predict" to get network type and signal strength</li>
+                            <li class="list-group-item border-0 ps-0">View results in the right panel</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle text-info me-2"></i>Input Guidelines</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>All measurements are in their respective units</li>
+                            <li><i class="fas fa-check text-success me-2"></i>dBm values can be negative (signal strength)</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Coordinate values should be decimal degrees</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Use test samples for quick validation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('regression') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Regression
+                    </a>
+                    <a href="{{ url_for('home') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function clearForm() {
+    document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+        input.value = '';
+    });
+    document.getElementById('model').selectedIndex = 0;
+}
+
+function loadTestSample(index) {
+    fetch(`/load_test_sample/${index}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Fill form with sample data
+            Object.keys(data).forEach(key => {
+                const input = document.getElementById(key) || document.querySelector(`input[name="${key}"]`);
+                if (input) {
+                    input.value = data[key];
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading test sample:', error);
+            alert('Error loading test sample');
+        });
+}
+</script>
+{% endblock %}
